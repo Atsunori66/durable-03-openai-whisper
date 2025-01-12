@@ -26,23 +26,15 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      # - name: Create and start virtual environment
-      #   run: |
-      #     python -m venv venv
-      #     source venv/bin/activate
+      - name: Create and start virtual environment
+        run: |
+          python -m venv venv
+          source venv/bin/activate
 
-      # - name: Install dependencies
-      #   run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
       # Optional: Add step to run tests here
-
-      - name: 'Resolve Project Dependencies Using Pip'
-        shell: bash
-        run: |
-          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
-          popd
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
@@ -85,3 +77,5 @@ jobs:
           app-name: 'durable-03-openai-whisper'
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          scm-do-build-during-deployment: true
+          enable-oryx-build: true

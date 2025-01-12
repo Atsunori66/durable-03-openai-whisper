@@ -7,8 +7,6 @@ import logging
 import re
 import os
 import tempfile
-# import whisper
-import io
 
 myApp = df.DFApp(http_auth_level=func.AuthLevel.FUNCTION)
 

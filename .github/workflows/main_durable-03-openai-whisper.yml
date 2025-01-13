@@ -85,3 +85,4 @@ jobs:
           # package: './release.zip'
           scm-do-build-during-deployment: false
           enable-oryx-build: false
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}

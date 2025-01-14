@@ -35,6 +35,13 @@ jobs:
         pip install -r requirements.txt --target=".python_packages/lib/site-packages"
         popd
 
+    - name: Login to Azure
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_2455F5DD504C4B97B13242FF38C9960F }}
+        tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_C5FC6DCDA2DE49B28C864D87240FE529 }}
+        subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_E5BFE20D7374466ABB324299516DB528 }}
+
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1
       id: fa

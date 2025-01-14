@@ -90,6 +90,9 @@ def actv_openai(input: dict):
     # input_bytes = io.BytesIO(inputblob.read())
     input_bytes = inputblob.download_blob()
 
+    temp_vocals = None
+    temp_txt = None
+
     with (
         tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_vocals
     ):
@@ -165,8 +168,12 @@ def actv_openai(input: dict):
     # 一時ファイルの削除
     logging.info("[actv-info] Now deleting the temp file...")
     print("[actv-print] Now deleting the temp file...")
-    os.remove(temp_vocals.name)
-    os.remove(temp_txt.name)
+
+    if temp_vocals and os.path.exists(temp_vocals.name):
+        os.remove(temp_vocals.name)
+
+    if temp_txt and os.path.exists(temp_txt.name):
+        os.remove(temp_txt.name)
 
     # レスポンス
     return "Speech-to-text processing by whisper was executed successfully."

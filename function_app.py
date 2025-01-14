@@ -61,7 +61,8 @@ def actv_openai(input: dict):
     file_name = input.get("file_name")
     target_lang = input.get("target_lang")
     file_name_only = re.split("[.]", file_name)[-2]
-    vocals_file_name = f"vocals_{file_name_only}.wav"
+    # vocals_file_name = f"vocals_{file_name_only}.wav"
+    vocals_file_name = f"vocals_{file_name_only}.mp3"
 
     logging.info(f"[actv-info] file_name_only: {file_name_only}")
     logging.info(f"[actv-info] vocals_file_name: {vocals_file_name}")
@@ -94,7 +95,8 @@ def actv_openai(input: dict):
     temp_txt = None
 
     with (
-        tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_vocals
+        # tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_vocals
+        tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as temp_vocals
     ):
         # inputblob の内容を書き込む
         # temp_vocals.write(input_bytes.getvalue())

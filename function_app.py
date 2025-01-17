@@ -4,7 +4,6 @@ from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
 from openai import OpenAI
 import logging
-# import re
 import os
 import tempfile
 
@@ -60,9 +59,7 @@ def actv_openai(input: dict):
 
     file_name = input.get("file_name")
     target_lang = input.get("target_lang")
-    # file_name_only = re.split("[.]", file_name)[-2]
     file_name_only = os.path.splitext(file_name)[0]
-    # vocals_file_name = f"vocals_{file_name_only}.wav"
     vocals_file_name = f"vocals_{file_name_only}.mp3"
 
     logging.info(f"[actv-info] file_name_only: {file_name_only}")
@@ -96,7 +93,6 @@ def actv_openai(input: dict):
     temp_txt = None
 
     with (
-        # tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_vocals
         tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as temp_vocals
     ):
         # inputblob の内容を書き込む
@@ -134,9 +130,9 @@ def actv_openai(input: dict):
                 logging.error(f"[actv-error] Some error occured on whisper!! {str(e)}")
                 print(f"[actv-print] Some error occured on whisper!! {str(e)}")
             else:
-                lyrics_file_name = f"vocals_{file_name_only}.txt"
-                logging.info(f"[actv-info] lyrics_file_name: {lyrics_file_name}")
-                print(f"[actv-print] lyrics_file_name: {lyrics_file_name}")
+                vocals_txt_name = f"vocals_{file_name_only}.txt"
+                logging.info(f"[actv-info] vocals_txt_name: {vocals_txt_name}")
+                print(f"[actv-print] vocals_txt_name: {vocals_txt_name}")
             finally:
                 logging.info("[actv-info] At least an attempt to process Speech-to-Text is done.")
                 print("[actv-print] At least an attempt to process Speech-to-Text is done.")
@@ -152,7 +148,7 @@ def actv_openai(input: dict):
 
                 # コンテナーに txt ファイルをアップロード
                 with open(temp_txt.name, mode="rb") as target:
-                    container_client_lyrics.upload_blob(name=lyrics_file_name, data=target, overwrite=True)
+                    container_client_lyrics.upload_blob(name=vocals_txt_name, data=target, overwrite=True)
 
             logging.info("[actv-info] A lyrics file was successfully uploaded.")
             print("[actv-print] A lyrics file was successfully uploaded.")
@@ -160,13 +156,16 @@ def actv_openai(input: dict):
             logging.error("[actv-error] No transcription available. Skipping file upload.")
             print("[actv-print] No transcription available. Skipping file upload.")
 
-
     # オリジナル音声ファイルの削除
-    container_client_delete = blob_service_client.get_container_client(container=container_separated)
-
     logging.info("[actv-info] Now deleting vocal track...")
     print("[actv-print] Now deleting the vocal track...")
-    container_client_delete.delete_blob(blob=vocals_file_name)
+    container_client_delete = blob_service_client.get_container_client(container=container_separated)
+
+    try:
+        container_client_delete.delete_blob(blob=vocals_file_name)
+    except:
+        logging.warning(f"[actv-warn] Blob {vocals_file_name} not found. It might have been already deleted.")
+        print(f"[actv-print] Blob {vocals_file_name} not found. It might have been already deleted.")
 
     # 一時ファイルの削除
     logging.info("[actv-info] Now deleting the temp file...")
@@ -179,4 +178,4 @@ def actv_openai(input: dict):
         os.remove(temp_txt.name)
 
     # レスポンス
-    return "Speech-to-text processing by whisper was executed successfully."
+    return vocals_txt_name

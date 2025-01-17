@@ -4,7 +4,7 @@ from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
 from openai import OpenAI
 import logging
-import re
+# import re
 import os
 import tempfile
 
@@ -60,7 +60,8 @@ def actv_openai(input: dict):
 
     file_name = input.get("file_name")
     target_lang = input.get("target_lang")
-    file_name_only = re.split("[.]", file_name)[-2]
+    # file_name_only = re.split("[.]", file_name)[-2]
+    file_name_only = os.path.splitext(file_name)[0]
     # vocals_file_name = f"vocals_{file_name_only}.wav"
     vocals_file_name = f"vocals_{file_name_only}.mp3"
 
